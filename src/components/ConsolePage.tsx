@@ -104,20 +104,13 @@ function SidebarNav({
 }) {
   return (
     <>
-      <div className="relative m-3 overflow-hidden rounded-lg border border-border bg-card p-3">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -top-6 -right-6 size-16 rounded-full opacity-20 blur-xl"
-          style={{ background: `linear-gradient(135deg, ${stageColors[0]}, ${stageColors[1]})` }}
-        />
-        <div className="relative flex items-center gap-2">
-          <div className="flex size-8 items-center justify-center rounded-full bg-primary text-[11px] font-semibold text-primary-foreground">
-            NN
-          </div>
-          <div className="min-w-0">
-            <div className="truncate text-xs font-semibold">Welcome back, Naresh</div>
-            <div className="text-[10.5px] text-muted-foreground">Commodities Desk</div>
-          </div>
+      <div className="m-3 flex items-center gap-2 rounded-lg border border-border p-3">
+        <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-[11px] font-semibold text-primary-foreground">
+          NN
+        </div>
+        <div className="min-w-0">
+          <div className="truncate text-xs font-semibold">Naresh Nimmala</div>
+          <div className="text-[10.5px] text-muted-foreground">Commodities Desk</div>
         </div>
       </div>
 
@@ -216,9 +209,9 @@ export function ConsolePage({
   }
 
   return (
-    <div className="flex h-screen flex-col bg-background text-foreground">
+    <div className="flex h-screen flex-col bg-white text-foreground">
       {/* ---------- Top bar ---------- */}
-      <header className="relative flex h-14 shrink-0 items-center justify-between gap-3 border-b border-border bg-background px-4">
+      <header className="relative flex h-14 shrink-0 items-center justify-between gap-3 border-b border-border bg-white px-4">
         <div
           aria-hidden="true"
           className="absolute inset-x-0 bottom-0 h-px"
@@ -336,7 +329,7 @@ export function ConsolePage({
 
       <div className="flex min-h-0 flex-1">
         {/* ---------- Sidebar (desktop) ---------- */}
-        <aside className="hidden w-60 shrink-0 flex-col border-r border-border bg-muted/15 sm:flex">
+        <aside className="hidden w-60 shrink-0 flex-col border-r border-border bg-white sm:flex">
           <SidebarNav
             active={active}
             onSelect={setActive}
@@ -349,15 +342,7 @@ export function ConsolePage({
         <main className="min-w-0 flex-1 overflow-y-auto">
           <div className="w-full px-4 py-5 sm:px-6 sm:py-6 lg:px-8 xl:px-10">
             {/* Welcome banner */}
-            <div className="relative overflow-hidden rounded-2xl border border-border p-5 sm:p-6">
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 opacity-[0.14]"
-                style={{
-                  background:
-                    "radial-gradient(50% 60% at 8% 0%, var(--stage-produce), transparent 70%), radial-gradient(40% 55% at 95% 100%, var(--stage-share), transparent 70%)",
-                }}
-              />
+            <div className="relative overflow-hidden rounded-2xl border border-border bg-white p-5 sm:p-6">
               <div
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-x-0 top-0 h-0.5"
