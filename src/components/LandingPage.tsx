@@ -36,7 +36,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
-import { capabilities, desks, faqs, metrics, pipeline } from "@/data/landing-content"
+import { capabilities, faqs, metrics, pipeline } from "@/data/landing-content"
 
 const stageColors = [
   "var(--stage-produce)",
@@ -289,23 +289,6 @@ export function LandingPage({ onOpenWorkspace }: { onOpenWorkspace: () => void }
           </div>
         </div>
       </section>
-
-      {/* ---------- Trust strip — used-by band, Purview-style logo bar (text, no real logos) ---------- */}
-      <div className="border-b border-border bg-card">
-        <div className="mx-auto flex max-w-[1440px] flex-col items-center gap-3 px-6 py-4 sm:flex-row sm:gap-6">
-          <span className="shrink-0 text-xs font-medium text-muted-foreground">Used across the firm</span>
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-1.5 sm:justify-start">
-            {desks.map((d) => (
-              <span
-                key={d}
-                className="text-[13px] font-medium text-muted-foreground/60 transition-colors hover:text-foreground"
-              >
-                {d}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
 
       {/* ---------- Capabilities — dense divided list, not padded cards ---------- */}
       <section id="capabilities" className="mx-auto max-w-[1440px] px-6 pt-8 pb-12">

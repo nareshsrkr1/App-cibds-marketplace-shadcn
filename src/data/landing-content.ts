@@ -21,15 +21,6 @@ export type PipelineStep = { n: string; title: string; body: string }
 
 export type FaqItem = { q: string; a: string }
 
-export const desks: string[] = [
-  "Commodities Desk",
-  "Market Risk",
-  "Credit Risk",
-  "Investments Ops",
-  "Compliance",
-  "Corporate Treasury",
-]
-
 export const metrics: Metric[] = [
   { key: "physical-datasets", value: 6, label: "Physical datasets" },
   { key: "subject-areas", value: 14, label: "Subject areas" },
