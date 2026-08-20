@@ -14,6 +14,12 @@ import {
   Menu,
   Check,
   Lock,
+  History,
+  Inbox,
+  UploadCloud,
+  ShieldCheck,
+  KeyRound,
+  ArrowRight,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -72,6 +78,19 @@ const classificationDot: Record<string, string> = {
   Confidential: "var(--destructive)",
 }
 
+const activity = [
+  { icon: UploadCloud, text: "You published Endur Settlement Instructions", time: "1h ago", color: stageColors[1] },
+  { icon: KeyRound, text: "Market Risk requested access to VaR Snapshot", time: "3h ago", color: stageColors[3] },
+  { icon: ShieldCheck, text: "Classification confirmed on Credit Limits by Counterparty", time: "6h ago", color: stageColors[2] },
+  { icon: Check, text: "Governance approved OTC Counterparty Exposure", time: "1d ago", color: stageColors[4] },
+]
+
+const approvals = [
+  { name: "Credit Limits by Counterparty", requester: "Market Risk", type: "Access request" },
+  { name: "settlement_ccy", requester: "Compliance", type: "New glossary term" },
+  { name: "Endur Composer Child Trades", requester: "Investments Ops", type: "Access request" },
+]
+
 function SidebarNav({
   active,
   onSelect,
@@ -92,10 +111,7 @@ function SidebarNav({
           style={{ background: `linear-gradient(135deg, ${stageColors[0]}, ${stageColors[1]})` }}
         />
         <div className="relative flex items-center gap-2">
-          <div
-            className="flex size-8 items-center justify-center rounded-full text-[11px] font-semibold text-white"
-            style={{ background: `linear-gradient(135deg, ${stageColors[0]}, ${stageColors[1]})` }}
-          >
+          <div className="flex size-8 items-center justify-center rounded-full bg-primary text-[11px] font-semibold text-primary-foreground">
             NN
           </div>
           <div className="min-w-0">
@@ -243,7 +259,7 @@ export function ConsolePage({
           <span className="hidden truncate text-sm text-muted-foreground sm:block">{active}</span>
         </div>
 
-        <div className="hidden items-center gap-1.5 rounded-md border border-border bg-muted/40 px-2.5 py-1.5 text-xs text-muted-foreground transition-colors focus-within:border-ring md:flex md:w-72">
+        <div className="hidden items-center gap-1.5 rounded-full border border-border bg-muted/40 px-3.5 py-1.5 text-xs text-muted-foreground transition-colors focus-within:border-ring md:flex md:w-72">
           <Search className="size-3.5" />
           Search datasets, terms, owners…
         </div>
@@ -264,10 +280,7 @@ export function ConsolePage({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="flex items-center gap-2 rounded-md px-1 py-1 transition-colors hover:bg-muted">
-                <div
-                  className="flex size-7 items-center justify-center rounded-full text-[11px] font-semibold text-white"
-                  style={{ background: `linear-gradient(135deg, ${stageColors[0]}, ${stageColors[1]})` }}
-                >
+                <div className="flex size-7 items-center justify-center rounded-full bg-primary text-[11px] font-semibold text-primary-foreground">
                   NN
                 </div>
                 <div className="hidden text-left leading-tight sm:block">
@@ -335,16 +348,38 @@ export function ConsolePage({
         {/* ---------- Main ---------- */}
         <main className="min-w-0 flex-1 overflow-y-auto">
           <div className="w-full px-4 py-5 sm:px-6 sm:py-6 lg:px-8 xl:px-10">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h1 className="text-xl font-semibold tracking-tight">{active}</h1>
-                <p className="mt-0.5 text-sm text-muted-foreground">
-                  Datasets your team owns or has bound access to.
-                </p>
+            {/* Welcome banner */}
+            <div className="relative overflow-hidden rounded-2xl border border-border p-5 sm:p-6">
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 opacity-[0.14]"
+                style={{
+                  background:
+                    "radial-gradient(50% 60% at 8% 0%, var(--stage-produce), transparent 70%), radial-gradient(40% 55% at 95% 100%, var(--stage-share), transparent 70%)",
+                }}
+              />
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-x-0 top-0 h-0.5"
+                style={{ background: `linear-gradient(90deg, ${stageColors.join(", ")})` }}
+              />
+              <div className="relative flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    {current.label} workspace
+                  </p>
+                  <h1 className="mt-0.5 text-xl font-semibold tracking-tight sm:text-2xl">
+                    Welcome back, Naresh.
+                  </h1>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Viewing <span className="font-medium text-foreground">{active}</span> — datasets
+                    your team owns or has bound access to.
+                  </p>
+                </div>
+                <Button className="shrink-0 shadow-[0_6px_16px_-6px_var(--primary)]">
+                  <Plus className="size-4" /> New dataset
+                </Button>
               </div>
-              <Button size="sm" className="shadow-[0_6px_16px_-6px_var(--primary)]">
-                <Plus className="size-4" /> New dataset
-              </Button>
             </div>
 
             <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -370,7 +405,8 @@ export function ConsolePage({
               ))}
             </div>
 
-            <Card className="mt-5 gap-0 overflow-hidden py-0">
+            <div className="mt-5 flex flex-col gap-5 lg:flex-row lg:items-start">
+            <Card className="min-w-0 flex-1 gap-0 overflow-hidden py-0">
               <div className="flex items-center justify-between border-b border-border px-4 py-3">
                 <div className="flex items-center gap-1.5 rounded-md border border-border bg-muted/40 px-2.5 py-1.5 text-xs text-muted-foreground transition-colors focus-within:border-ring">
                   <Search className="size-3.5" />
@@ -442,6 +478,70 @@ export function ConsolePage({
                 </div>
               </div>
             </Card>
+
+            {/* Right rail — activity + governance queue */}
+            <div className="flex w-full shrink-0 flex-col gap-5 lg:w-72">
+              <Card className="gap-0 py-0">
+                <div className="flex items-center gap-2 border-b border-border px-4 py-3">
+                  <History className="size-4 text-muted-foreground" />
+                  <span className="text-sm font-semibold">Recent activity</span>
+                </div>
+                <div className="flex flex-col">
+                  {activity.map((a, i) => (
+                    <div
+                      key={a.text}
+                      className={cn(
+                        "flex items-start gap-2.5 px-4 py-3",
+                        i < activity.length - 1 && "border-b border-border",
+                      )}
+                    >
+                      <div
+                        className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-md"
+                        style={{ backgroundColor: `color-mix(in oklch, ${a.color} 16%, transparent)`, color: a.color }}
+                      >
+                        <a.icon className="size-3.5" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[12.5px] leading-snug">{a.text}</p>
+                        <p className="mt-0.5 text-[11px] text-muted-foreground">{a.time}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+
+              <Card className="gap-0 py-0">
+                <div className="flex items-center justify-between border-b border-border px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <Inbox className="size-4 text-muted-foreground" />
+                    <span className="text-sm font-semibold">Governance queue</span>
+                  </div>
+                  <Badge variant="secondary" className="h-5 px-1.5 text-[10.5px] font-normal">
+                    {approvals.length}
+                  </Badge>
+                </div>
+                <div className="flex flex-col">
+                  {approvals.map((a, i) => (
+                    <div
+                      key={a.name}
+                      className={cn(
+                        "px-4 py-3",
+                        i < approvals.length - 1 && "border-b border-border",
+                      )}
+                    >
+                      <p className="truncate text-[12.5px] font-medium">{a.name}</p>
+                      <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
+                        {a.type} · {a.requester}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+                <button className="flex items-center justify-center gap-1.5 border-t border-border px-4 py-2.5 text-xs font-medium text-primary transition-colors hover:bg-muted">
+                  Review all <ArrowRight className="size-3.5" />
+                </button>
+              </Card>
+            </div>
+            </div>
           </div>
         </main>
       </div>
