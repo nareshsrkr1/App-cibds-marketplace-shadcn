@@ -47,7 +47,7 @@ function scrollToId(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" })
 }
 
-function NavLink({ id, children, dark }: { id: string; children: ReactNode; dark?: boolean }) {
+function NavLink({ id, children }: { id: string; children: ReactNode }) {
   return (
     <a
       href={`#${id}`}
@@ -55,10 +55,7 @@ function NavLink({ id, children, dark }: { id: string; children: ReactNode; dark
         e.preventDefault()
         scrollToId(id)
       }}
-      className={cn(
-        "text-sm transition-colors",
-        dark ? "text-background/70 hover:text-background" : "text-muted-foreground hover:text-foreground",
-      )}
+      className="text-sm text-muted-foreground transition-colors hover:text-foreground"
     >
       {children}
     </a>
@@ -66,21 +63,24 @@ function NavLink({ id, children, dark }: { id: string; children: ReactNode; dark
 }
 
 // A quadratic-bezier arc through 5 points, so nodes sit exactly on the drawn curve.
-const ARC_PATH = "M20,210 Q290,20 560,210"
+// Endpoints kept well inside the viewBox (not at x=0/max) so their labels don't clip.
+const ARC_PATH = "M40,200 Q300,30 560,200"
 const ARC_NODES = [
-  { x: 20, y: 210 },
-  { x: 156, y: 138 },
-  { x: 290, y: 113 },
-  { x: 424, y: 138 },
-  { x: 560, y: 210 },
+  { x: 40, y: 200 },
+  { x: 170, y: 136 },
+  { x: 300, y: 115 },
+  { x: 430, y: 136 },
+  { x: 560, y: 200 },
 ]
 
 /** The hero's centerpiece — a lit arc connecting the five pipeline stages,
  * replacing the usual browser-chrome screenshot with something that reads
- * as a journey rather than a static product shot. */
+ * as a journey rather than a static product shot. Endpoint labels sit
+ * above their nodes (there's no room below before the page content),
+ * the three raised middle nodes sit below theirs. */
 function JourneyArc() {
   return (
-    <svg viewBox="0 0 580 250" className="w-full" aria-hidden="true">
+    <svg viewBox="0 0 600 240" className="w-full" aria-hidden="true">
       <defs>
         <linearGradient id="arc-line" x1="0" y1="0" x2="1" y2="0">
           {stageColors.map((c, i) => (
@@ -88,7 +88,7 @@ function JourneyArc() {
           ))}
         </linearGradient>
         <filter id="arc-glow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="6" result="blur" />
+          <feGaussianBlur stdDeviation="5" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
             <feMergeNode in="SourceGraphic" />
@@ -96,35 +96,36 @@ function JourneyArc() {
         </filter>
       </defs>
 
-      <path d={ARC_PATH} fill="none" stroke="var(--background)" strokeOpacity={0.08} strokeWidth={10} strokeLinecap="round" />
+      <path d={ARC_PATH} fill="none" stroke="var(--border)" strokeWidth={10} strokeLinecap="round" />
       <path d={ARC_PATH} fill="none" stroke="url(#arc-line)" strokeWidth={2.5} strokeLinecap="round" filter="url(#arc-glow)" />
 
       {ARC_NODES.map((pt, i) => {
         const s = pipeline[i]
-        const labelBelow = i % 2 === 0
+        const isEndpoint = i === 0 || i === 4
         return (
           <g key={s.n}>
-            <circle cx={pt.x} cy={pt.y} r={16} fill={stageColors[i]} opacity={0.18} />
+            <circle cx={pt.x} cy={pt.y} r={16} fill={stageColors[i]} opacity={0.15} />
             <circle cx={pt.x} cy={pt.y} r={7} fill={stageColors[i]} filter="url(#arc-glow)" />
             <text
               x={pt.x}
-              y={labelBelow ? pt.y + 34 : pt.y - 22}
+              y={isEndpoint ? pt.y - 22 : pt.y + 34}
               textAnchor="middle"
-              className="fill-background text-[15px] font-semibold"
+              className="fill-foreground text-[15px] font-semibold"
               style={{ fontFamily: "var(--font-sans)" }}
             >
               {s.title}
             </text>
-            <text
-              x={pt.x}
-              y={labelBelow ? pt.y + 52 : pt.y - 4}
-              textAnchor="middle"
-              className="fill-background text-[10.5px]"
-              opacity={0.55}
-              style={{ fontFamily: "var(--font-sans)" }}
-            >
-              {s.n === "1" ? "starts here" : s.n === "5" ? "ends here" : ""}
-            </text>
+            {isEndpoint ? (
+              <text
+                x={pt.x}
+                y={pt.y - 38}
+                textAnchor="middle"
+                className="fill-muted-foreground text-[10.5px]"
+                style={{ fontFamily: "var(--font-sans)" }}
+              >
+                {i === 0 ? "starts here" : "ends here"}
+              </text>
+            ) : null}
           </g>
         )
       })}
@@ -237,11 +238,10 @@ export function LandingPage({ onOpenWorkspace }: { onOpenWorkspace: () => void }
     <div className="min-h-screen bg-background text-foreground">
       {/* ---------- Nav — floating pill, sits on the dark hero ---------- */}
       <header className="sticky top-4 z-40 px-4">
-        <div className="mx-auto flex h-14 max-w-[1100px] items-center justify-between rounded-full border border-background/10 bg-foreground/95 px-3 pl-5 text-background shadow-lg shadow-black/20 backdrop-blur-md">
+        <div className="mx-auto flex h-14 max-w-[1100px] items-center justify-between rounded-full border border-border bg-card/95 px-3 pl-5 shadow-md shadow-black/[0.04] backdrop-blur-md">
           <div className="flex items-center gap-2.5">
             <div
-              className="flex size-6.5 items-center justify-center rounded-full text-[12px] font-semibold text-foreground"
-              style={{ background: `linear-gradient(135deg, ${stageColors.join(", ")})` }}
+              className="flex size-6.5 items-center justify-center rounded-md bg-primary text-[12px] font-semibold text-primary-foreground"
               aria-hidden="true"
             >
               C
@@ -250,29 +250,20 @@ export function LandingPage({ onOpenWorkspace }: { onOpenWorkspace: () => void }
           </div>
 
           <nav className="hidden items-center gap-6 md:flex" aria-label="Primary">
-            <NavLink id="how-it-works" dark>How it works</NavLink>
-            <NavLink id="capabilities" dark>Capabilities</NavLink>
-            <NavLink id="faq" dark>FAQ</NavLink>
+            <NavLink id="how-it-works">How it works</NavLink>
+            <NavLink id="capabilities">Capabilities</NavLink>
+            <NavLink id="faq">FAQ</NavLink>
           </nav>
 
           <div className="hidden items-center md:flex">
-            <Button
-              size="sm"
-              onClick={onOpenWorkspace}
-              className="rounded-full bg-background text-foreground hover:bg-background/90"
-            >
+            <Button size="sm" onClick={onOpenWorkspace} className="rounded-full">
               Open workspace <ArrowRight className="size-3.5" />
             </Button>
           </div>
 
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full text-background hover:bg-background/10 hover:text-background md:hidden"
-                aria-label="Open menu"
-              >
+              <Button variant="ghost" size="icon" className="rounded-full md:hidden" aria-label="Open menu">
                 <Menu className="size-5" />
               </Button>
             </SheetTrigger>
@@ -293,50 +284,49 @@ export function LandingPage({ onOpenWorkspace }: { onOpenWorkspace: () => void }
         </div>
       </header>
 
-      {/* ---------- Hero — dark canvas, the arc is the visual anchor ---------- */}
-      <section className="relative -mt-[4.5rem] overflow-hidden bg-foreground pt-[4.5rem] text-background">
+      {/* ---------- Hero — light canvas, the arc is the visual anchor ---------- */}
+      <section className="relative -mt-[4.5rem] overflow-hidden border-b border-border pt-[4.5rem]">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 opacity-[0.5]"
+          className="pointer-events-none absolute inset-0 opacity-[0.12]"
           style={{
             background:
-              "radial-gradient(45% 40% at 20% 15%, color-mix(in oklch, var(--stage-produce) 35%, transparent), transparent 70%), radial-gradient(40% 35% at 85% 10%, color-mix(in oklch, var(--stage-share) 30%, transparent), transparent 70%)",
+              "radial-gradient(45% 40% at 20% 10%, var(--stage-produce), transparent 70%), radial-gradient(40% 35% at 85% 8%, var(--stage-share), transparent 70%)",
           }}
         />
-        <div className="relative mx-auto max-w-[1200px] px-6 pt-16 pb-8 text-center sm:pt-20">
-          <Badge className="mb-5 rounded-full border-background/15 bg-background/10 px-3 py-1 text-background" variant="outline">
+        <div className="relative mx-auto max-w-[1200px] px-6 pt-16 text-center sm:pt-20">
+          <Badge variant="outline" className="mb-5 rounded-full text-muted-foreground">
             Wells Fargo · CIB Data Services
           </Badge>
           <h1 className="mx-auto max-w-3xl text-4xl leading-[1.08] font-semibold tracking-tight text-balance sm:text-5xl">
             Every dataset has a journey.
             <br className="hidden sm:block" /> We make it a trusted one.
           </h1>
-          <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-background/65">
+          <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
             The single governed marketplace for the firm's data — from the desk that
             creates it to the team that relies on it.
           </p>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            <Button onClick={onOpenWorkspace} size="lg" className="rounded-full bg-background text-foreground hover:bg-background/90">
+            <Button onClick={onOpenWorkspace} size="lg" className="rounded-full">
               Open workspace <ArrowRight className="size-4" />
             </Button>
             <Button
               variant="outline"
               size="lg"
               onClick={() => scrollToId("how-it-works")}
-              className="rounded-full border-background/20 bg-transparent text-background hover:bg-background/10"
+              className="rounded-full"
             >
               See how it works
             </Button>
           </div>
 
-          <div className="mx-auto mt-10 max-w-3xl">
+          <div className="mx-auto mt-8 max-w-3xl">
             <JourneyArc />
           </div>
         </div>
 
-        {/* Metrics bridge the dark hero and the light page below */}
-        <div className="relative mx-auto max-w-[1000px] px-6">
-          <div className="grid -translate-y-1/2 grid-cols-3 gap-3 rounded-2xl border border-border bg-card p-4 shadow-2xl shadow-black/10 sm:grid-cols-5 sm:p-5">
+        <div className="relative mx-auto max-w-[1000px] px-6 pt-4 pb-10">
+          <div className="grid grid-cols-3 gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm sm:grid-cols-5 sm:p-5">
             {metrics.map((m, i) => (
               <div key={m.key} className="text-center sm:text-left">
                 <div className="flex items-center justify-center gap-1.5 sm:justify-start">
@@ -473,27 +463,26 @@ export function LandingPage({ onOpenWorkspace }: { onOpenWorkspace: () => void }
         </div>
       </section>
 
-      {/* ---------- Footer — dark band, bookends the hero ---------- */}
-      <footer className="bg-foreground text-background">
+      {/* ---------- Footer ---------- */}
+      <footer className="border-t border-border">
         <div className="mx-auto flex max-w-[1200px] flex-col items-center justify-between gap-4 px-6 py-8 text-sm sm:flex-row">
           <div className="flex items-center gap-2">
             <div
-              className="flex size-6 items-center justify-center rounded-full text-[11px] font-semibold text-foreground"
-              style={{ background: `linear-gradient(135deg, ${stageColors.join(", ")})` }}
+              className="flex size-6 items-center justify-center rounded-md bg-primary text-[11px] font-semibold text-primary-foreground"
             >
               C
             </div>
-            <span className="font-semibold">Data Marketplace</span>
-            <span className="text-background/50">· CIB Data Services · Internal use only</span>
+            <span className="font-semibold text-foreground">Data Marketplace</span>
+            <span className="text-muted-foreground">· CIB Data Services · Internal use only</span>
           </div>
           <button
             onClick={onOpenWorkspace}
-            className="flex items-center gap-1 text-background/70 transition-colors hover:text-background"
+            className="flex items-center gap-1 text-muted-foreground transition-colors hover:text-foreground"
           >
             Open workspace <ArrowUpRight className="size-3.5" />
           </button>
         </div>
-        <div className="border-t border-background/10 px-6 py-3 text-center text-xs text-background/40">
+        <div className="border-t border-border px-6 py-3 text-center text-xs text-muted-foreground/70">
           © 2026 Wells Fargo
         </div>
       </footer>
