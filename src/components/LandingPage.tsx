@@ -1,7 +1,6 @@
 import { useState, type ReactNode } from "react"
 import {
   ArrowRight,
-  ArrowUpRight,
   Menu,
   Mail,
   Search,
@@ -307,16 +306,12 @@ export function LandingPage({ onOpenWorkspace }: { onOpenWorkspace: () => void }
             creates it to the team that relies on it.
           </p>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            <Button onClick={onOpenWorkspace} size="lg" className="rounded-full">
-              Open workspace <ArrowRight className="size-4" />
-            </Button>
             <Button
-              variant="outline"
               size="lg"
               onClick={() => scrollToId("how-it-works")}
               className="rounded-full"
             >
-              See how it works
+              See how it works <ArrowRight className="size-4" />
             </Button>
           </div>
 
@@ -465,22 +460,14 @@ export function LandingPage({ onOpenWorkspace }: { onOpenWorkspace: () => void }
 
       {/* ---------- Footer ---------- */}
       <footer className="border-t border-border">
-        <div className="mx-auto flex max-w-[1200px] flex-col items-center justify-between gap-4 px-6 py-8 text-sm sm:flex-row">
-          <div className="flex items-center gap-2">
-            <div
-              className="flex size-6 items-center justify-center rounded-md bg-primary text-[11px] font-semibold text-primary-foreground"
-            >
-              C
-            </div>
-            <span className="font-semibold text-foreground">Data Marketplace</span>
-            <span className="text-muted-foreground">· CIB Data Services · Internal use only</span>
-          </div>
-          <button
-            onClick={onOpenWorkspace}
-            className="flex items-center gap-1 text-muted-foreground transition-colors hover:text-foreground"
+        <div className="mx-auto flex max-w-[1200px] items-center justify-center gap-2 px-6 py-8 text-sm sm:justify-start">
+          <div
+            className="flex size-6 items-center justify-center rounded-md bg-primary text-[11px] font-semibold text-primary-foreground"
           >
-            Open workspace <ArrowUpRight className="size-3.5" />
-          </button>
+            C
+          </div>
+          <span className="font-semibold text-foreground">Data Marketplace</span>
+          <span className="text-muted-foreground">· CIB Data Services · Internal use only</span>
         </div>
         <div className="border-t border-border px-6 py-3 text-center text-xs text-muted-foreground/70">
           © 2026 Wells Fargo
