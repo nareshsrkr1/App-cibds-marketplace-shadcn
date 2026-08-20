@@ -12,7 +12,8 @@ import {
   Clock,
   Boxes,
   Menu,
-  RefreshCw,
+  Check,
+  Lock,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -21,6 +22,14 @@ import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
 import { personas, type PersonaKey, type NavSection } from "@/data/personas"
 
@@ -168,18 +177,6 @@ function SidebarNav({
           ))}
         </Accordion>
       </div>
-
-      <div className="mt-auto p-3">
-        <div className="rounded-lg border border-border bg-gradient-to-br from-card to-muted/30 p-3">
-          <p className="text-xs font-medium">Need access to a dataset?</p>
-          <p className="mt-0.5 text-[11px] leading-snug text-muted-foreground">
-            Request bindings through the governance queue.
-          </p>
-          <Button size="sm" variant="outline" className="mt-2 h-7 w-full text-xs">
-            Request access
-          </Button>
-        </div>
-      </div>
     </>
   )
 }
@@ -191,7 +188,7 @@ export function ConsolePage({
 }: {
   persona: PersonaKey
   onBack: () => void
-  onSwitchRole: () => void
+  onSwitchRole: (persona: PersonaKey) => void
 }) {
   const current = personas.find((p) => p.key === persona) ?? personas[0]
   const [active, setActive] = useState(current.navSections[0]?.items[0] ?? current.navTop[0])
@@ -253,15 +250,6 @@ export function ConsolePage({
 
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <button
-            onClick={onSwitchRole}
-            className="flex items-center gap-1.5 rounded-md border border-border px-2 py-1.5 text-xs font-medium transition-colors hover:bg-muted"
-            style={{ color: current.color }}
-          >
-            <current.icon className="size-3.5" />
-            <span className="hidden sm:inline">{current.label}</span>
-            <RefreshCw className="size-3 text-muted-foreground" />
-          </button>
-          <button
             className="relative flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             aria-label="Notifications"
           >
@@ -272,19 +260,64 @@ export function ConsolePage({
             />
           </button>
           <Separator orientation="vertical" className="h-5" />
-          <div className="flex items-center gap-2">
-            <div
-              className="flex size-7 items-center justify-center rounded-full text-[11px] font-semibold text-white"
-              style={{ background: `linear-gradient(135deg, ${stageColors[0]}, ${stageColors[1]})` }}
-            >
-              NN
-            </div>
-            <div className="hidden text-left leading-tight sm:block">
-              <div className="text-xs font-medium">Naresh Nimmala</div>
-              <div className="text-[10.5px] text-muted-foreground">Data Steward</div>
-            </div>
-            <ChevronDown className="hidden size-3.5 text-muted-foreground sm:block" />
-          </div>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex items-center gap-2 rounded-md px-1 py-1 transition-colors hover:bg-muted">
+                <div
+                  className="flex size-7 items-center justify-center rounded-full text-[11px] font-semibold text-white"
+                  style={{ background: `linear-gradient(135deg, ${stageColors[0]}, ${stageColors[1]})` }}
+                >
+                  NN
+                </div>
+                <div className="hidden text-left leading-tight sm:block">
+                  <div className="text-xs font-medium">Naresh Nimmala</div>
+                  <div className="flex items-center gap-1 text-[10.5px] text-muted-foreground">
+                    <current.icon className="size-2.5" style={{ color: current.color }} />
+                    {current.label}
+                  </div>
+                </div>
+                <ChevronDown className="hidden size-3.5 text-muted-foreground sm:block" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-64">
+              <DropdownMenuLabel className="font-normal">
+                <div className="text-sm font-medium">Naresh Nimmala</div>
+                <div className="text-xs text-muted-foreground">Data Steward · Commodities Desk</div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel className="pb-1 text-[10px] font-semibold tracking-wide text-muted-foreground/70 uppercase">
+                Switch role
+              </DropdownMenuLabel>
+              {personas.map((p) => {
+                const isCurrent = p.key === persona
+                return (
+                  <DropdownMenuItem
+                    key={p.key}
+                    disabled={!p.assigned}
+                    onSelect={() => p.assigned && onSwitchRole(p.key)}
+                    className="gap-2.5"
+                  >
+                    <div
+                      className="flex size-7 shrink-0 items-center justify-center rounded-md"
+                      style={{ backgroundColor: `color-mix(in oklch, ${p.color} 16%, transparent)`, color: p.color }}
+                    >
+                      <p.icon className="size-3.5" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-[13px] font-medium">{p.label}</div>
+                      <div className="truncate text-[11px] text-muted-foreground">{p.description}</div>
+                    </div>
+                    {isCurrent ? (
+                      <Check className="size-4 shrink-0 text-primary" />
+                    ) : !p.assigned ? (
+                      <Lock className="size-3.5 shrink-0 text-muted-foreground/50" />
+                    ) : null}
+                  </DropdownMenuItem>
+                )
+              })}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
 
