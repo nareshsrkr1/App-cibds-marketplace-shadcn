@@ -79,7 +79,7 @@ const ARC_NODES = [
  * the three raised middle nodes sit below theirs. */
 function JourneyArc() {
   return (
-    <svg viewBox="0 0 600 240" className="w-full" aria-hidden="true">
+    <svg viewBox="0 85 600 145" className="w-full" aria-hidden="true">
       <defs>
         <linearGradient id="arc-line" x1="0" y1="0" x2="1" y2="0">
           {stageColors.map((c, i) => (
@@ -294,12 +294,8 @@ export function LandingPage({ onOpenWorkspace }: { onOpenWorkspace: () => void }
           }}
         />
         <div className="relative mx-auto max-w-[1200px] px-6 pt-16 text-center sm:pt-20">
-          <Badge variant="outline" className="mb-5 rounded-full text-muted-foreground">
-            Wells Fargo · CIB Data Services
-          </Badge>
           <h1 className="mx-auto max-w-3xl text-4xl leading-[1.08] font-semibold tracking-tight text-balance sm:text-5xl">
             Every dataset has a journey.
-            <br className="hidden sm:block" /> We make it a trusted one.
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
             The single governed marketplace for the firm's data — from the desk that
