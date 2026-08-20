@@ -52,13 +52,6 @@ const navGroups = [
   },
 ]
 
-const stats = [
-  { key: "datasets", value: 6, label: "Physical datasets", icon: Boxes, color: stageColors[0] },
-  { key: "bound", value: "82%", label: "Avg. bound", icon: Gauge, color: stageColors[1] },
-  { key: "pending", value: 2, label: "Pending review", icon: Clock, color: stageColors[2] },
-  { key: "elements", value: 74, label: "Data elements", icon: Flame, color: stageColors[4] },
-]
-
 const datasets = [
   { name: "Endur OTC Commodity Trades", owner: "Commodities Desk", sor: "Endur", cls: "Internal", bound: 78, updated: "2d ago" },
   { name: "1CAT Investments Trades", owner: "Investments Ops", sor: "Catalyst", cls: "Internal", bound: 78, updated: "3d ago" },
@@ -66,6 +59,23 @@ const datasets = [
   { name: "Endur P&L and Greeks", owner: "Market Risk", sor: "Endur", cls: "Internal", bound: 91, updated: "5h ago" },
   { name: "Catalyst Position Snapshot", owner: "Investments Ops", sor: "Catalyst", cls: "Internal", bound: 88, updated: "1d ago" },
   { name: "OTC Counterparty Exposure", owner: "Credit Risk", sor: "Endur", cls: "Confidential", bound: 54, updated: "4d ago" },
+  { name: "Endur Physical Delivery Schedule", owner: "Commodities Desk", sor: "Endur", cls: "Internal", bound: 71, updated: "6h ago" },
+  { name: "Catalyst Margin Calls", owner: "Investments Ops", sor: "Catalyst", cls: "Confidential", bound: 66, updated: "2d ago" },
+  { name: "Market Risk VaR Snapshot", owner: "Market Risk", sor: "Endur", cls: "Internal", bound: 84, updated: "12h ago" },
+  { name: "Credit Limits by Counterparty", owner: "Credit Risk", sor: "Catalyst", cls: "Confidential", bound: 59, updated: "3d ago" },
+  { name: "Corporate Treasury Cash Positions", owner: "Corporate Treasury", sor: "Endur", cls: "Internal", bound: 95, updated: "1h ago" },
+  { name: "Compliance Trade Surveillance Feed", owner: "Compliance", sor: "Catalyst", cls: "Confidential", bound: 73, updated: "8h ago" },
+  { name: "Endur Settlement Instructions", owner: "Commodities Desk", sor: "Endur", cls: "Internal", bound: 80, updated: "1d ago" },
+  { name: "Catalyst Trade Confirmations", owner: "Investments Ops", sor: "Catalyst", cls: "Internal", bound: 87, updated: "4h ago" },
+  { name: "Market Risk Stress Test Results", owner: "Market Risk", sor: "Endur", cls: "Confidential", bound: 48, updated: "5d ago" },
+  { name: "Corporate Treasury FX Exposure", owner: "Corporate Treasury", sor: "Catalyst", cls: "Internal", bound: 92, updated: "9h ago" },
+]
+
+const stats = [
+  { key: "datasets", value: datasets.length, label: "Physical datasets", icon: Boxes, color: stageColors[0] },
+  { key: "bound", value: "78%", label: "Avg. bound", icon: Gauge, color: stageColors[1] },
+  { key: "pending", value: 3, label: "Pending review", icon: Clock, color: stageColors[2] },
+  { key: "elements", value: 74, label: "Data elements", icon: Flame, color: stageColors[4] },
 ]
 
 const classificationDot: Record<string, string> = {
