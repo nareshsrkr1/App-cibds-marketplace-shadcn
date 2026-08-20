@@ -2,9 +2,6 @@ import { useState } from "react"
 import {
   Bell,
   Database,
-  GitCommitHorizontal,
-  Workflow,
-  ShieldCheck,
   LayoutGrid,
   Search,
   Plus,
@@ -15,6 +12,7 @@ import {
   Clock,
   Boxes,
   Menu,
+  RefreshCw,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -24,6 +22,7 @@ import { Separator } from "@/components/ui/separator"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { cn } from "@/lib/utils"
+import { personas, type PersonaKey, type NavSection } from "@/data/personas"
 
 const stageColors = [
   "var(--stage-produce)",
@@ -32,37 +31,6 @@ const stageColors = [
   "var(--stage-share)",
   "var(--stage-consume)",
 ] as const
-
-// Standalone top-level items with no sub-menu.
-const navTop = [{ icon: LayoutGrid, label: "Console" }]
-
-// Sections: each is a tab-like heading with its own sub-menu underneath.
-const navSections = [
-  {
-    key: "catalog",
-    icon: Database,
-    label: "Catalog",
-    items: ["Physical datasets", "Logical datasets", "Business glossary", "Data elements"],
-  },
-  {
-    key: "curation",
-    icon: GitCommitHorizontal,
-    label: "Curation",
-    items: ["Bind columns", "Classification", "Lineage"],
-  },
-  {
-    key: "workflow",
-    icon: Workflow,
-    label: "Workflow",
-    items: ["My tasks", "Approvals"],
-  },
-  {
-    key: "governance",
-    icon: ShieldCheck,
-    label: "Governance",
-    items: ["Policies", "Access requests", "Audit log"],
-  },
-]
 
 const datasets = [
   { name: "Endur OTC Commodity Trades", owner: "Commodities Desk", sor: "Endur", cls: "Internal", bound: 78, updated: "2d ago" },
@@ -95,7 +63,17 @@ const classificationDot: Record<string, string> = {
   Confidential: "var(--destructive)",
 }
 
-function SidebarNav({ active, onSelect }: { active: string; onSelect: (label: string) => void }) {
+function SidebarNav({
+  active,
+  onSelect,
+  navTop,
+  navSections,
+}: {
+  active: string
+  onSelect: (label: string) => void
+  navTop: string[]
+  navSections: NavSection[]
+}) {
   return (
     <>
       <div className="relative m-3 overflow-hidden rounded-lg border border-border bg-card p-3">
@@ -121,12 +99,12 @@ function SidebarNav({ active, onSelect }: { active: string; onSelect: (label: st
       <div className="flex flex-col gap-1 overflow-y-auto px-3 pb-3">
         {/* Top-level items with no sub-menu */}
         <nav className="mb-1 flex flex-col gap-0.5" aria-label="Top">
-          {navTop.map((item) => {
-            const isActive = active === item.label
+          {navTop.map((label) => {
+            const isActive = active === label
             return (
               <button
-                key={item.label}
-                onClick={() => onSelect(item.label)}
+                key={label}
+                onClick={() => onSelect(label)}
                 className={cn(
                   "relative flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-left text-[14.5px] font-semibold transition-colors",
                   isActive
@@ -137,8 +115,8 @@ function SidebarNav({ active, onSelect }: { active: string; onSelect: (label: st
                 {isActive ? (
                   <span className="absolute top-1/2 left-0 h-4 w-0.5 -translate-y-1/2 rounded-full bg-primary" />
                 ) : null}
-                <item.icon className="size-4 shrink-0" />
-                <span className="truncate">{item.label}</span>
+                <LayoutGrid className="size-4 shrink-0" />
+                <span className="truncate">{label}</span>
               </button>
             )
           })}
@@ -146,6 +124,7 @@ function SidebarNav({ active, onSelect }: { active: string; onSelect: (label: st
 
         {/* Sections: a bold tab-level heading, with a lighter, indented sub-menu underneath */}
         <Accordion
+          key={navSections.map((s) => s.key).join("-")}
           type="multiple"
           defaultValue={navSections.map((s) => s.key)}
           className="flex flex-col gap-0.5"
@@ -205,8 +184,17 @@ function SidebarNav({ active, onSelect }: { active: string; onSelect: (label: st
   )
 }
 
-export function ConsolePage({ onBack }: { onBack: () => void }) {
-  const [active, setActive] = useState("Physical datasets")
+export function ConsolePage({
+  persona,
+  onBack,
+  onSwitchRole,
+}: {
+  persona: PersonaKey
+  onBack: () => void
+  onSwitchRole: () => void
+}) {
+  const current = personas.find((p) => p.key === persona) ?? personas[0]
+  const [active, setActive] = useState(current.navSections[0]?.items[0] ?? current.navTop[0])
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
 
   const selectNav = (label: string) => {
@@ -236,7 +224,12 @@ export function ConsolePage({ onBack }: { onBack: () => void }) {
               <SheetHeader className="border-b border-border">
                 <SheetTitle>Menu</SheetTitle>
               </SheetHeader>
-              <SidebarNav active={active} onSelect={selectNav} />
+              <SidebarNav
+                active={active}
+                onSelect={selectNav}
+                navTop={current.navTop}
+                navSections={current.navSections}
+              />
             </SheetContent>
           </Sheet>
 
@@ -250,7 +243,7 @@ export function ConsolePage({ onBack }: { onBack: () => void }) {
             <span className="truncate text-sm font-semibold">CIB Data Marketplace</span>
           </button>
           <ChevronRight className="hidden size-3.5 shrink-0 text-muted-foreground/50 sm:block" />
-          <span className="hidden truncate text-sm text-muted-foreground sm:block">Physical datasets</span>
+          <span className="hidden truncate text-sm text-muted-foreground sm:block">{active}</span>
         </div>
 
         <div className="hidden items-center gap-1.5 rounded-md border border-border bg-muted/40 px-2.5 py-1.5 text-xs text-muted-foreground transition-colors focus-within:border-ring md:flex md:w-72">
@@ -258,7 +251,16 @@ export function ConsolePage({ onBack }: { onBack: () => void }) {
           Search datasets, terms, owners…
         </div>
 
-        <div className="flex shrink-0 items-center gap-3">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+          <button
+            onClick={onSwitchRole}
+            className="flex items-center gap-1.5 rounded-md border border-border px-2 py-1.5 text-xs font-medium transition-colors hover:bg-muted"
+            style={{ color: current.color }}
+          >
+            <current.icon className="size-3.5" />
+            <span className="hidden sm:inline">{current.label}</span>
+            <RefreshCw className="size-3 text-muted-foreground" />
+          </button>
           <button
             className="relative flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             aria-label="Notifications"
@@ -289,7 +291,12 @@ export function ConsolePage({ onBack }: { onBack: () => void }) {
       <div className="flex min-h-0 flex-1">
         {/* ---------- Sidebar (desktop) ---------- */}
         <aside className="hidden w-60 shrink-0 flex-col border-r border-border bg-muted/15 sm:flex">
-          <SidebarNav active={active} onSelect={setActive} />
+          <SidebarNav
+            active={active}
+            onSelect={setActive}
+            navTop={current.navTop}
+            navSections={current.navSections}
+          />
         </aside>
 
         {/* ---------- Main ---------- */}
@@ -297,7 +304,7 @@ export function ConsolePage({ onBack }: { onBack: () => void }) {
           <div className="w-full px-4 py-5 sm:px-6 sm:py-6 lg:px-8 xl:px-10">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h1 className="text-xl font-semibold tracking-tight">Physical datasets</h1>
+                <h1 className="text-xl font-semibold tracking-tight">{active}</h1>
                 <p className="mt-0.5 text-sm text-muted-foreground">
                   Datasets your team owns or has bound access to.
                 </p>
