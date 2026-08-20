@@ -15,12 +15,14 @@ import {
   Gauge,
   Clock,
   Boxes,
+  Menu,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
 
 const stageColors = [
@@ -71,38 +73,131 @@ const classificationDot: Record<string, string> = {
   Confidential: "var(--destructive)",
 }
 
+function SidebarNav({ active, onSelect }: { active: string; onSelect: (label: string) => void }) {
+  return (
+    <>
+      <div className="relative m-3 overflow-hidden rounded-lg border border-border bg-card p-3">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -top-6 -right-6 size-16 rounded-full opacity-20 blur-xl"
+          style={{ background: `linear-gradient(135deg, ${stageColors[0]}, ${stageColors[1]})` }}
+        />
+        <div className="relative flex items-center gap-2">
+          <div
+            className="flex size-8 items-center justify-center rounded-full text-[11px] font-semibold text-white"
+            style={{ background: `linear-gradient(135deg, ${stageColors[0]}, ${stageColors[1]})` }}
+          >
+            NN
+          </div>
+          <div className="min-w-0">
+            <div className="truncate text-xs font-semibold">Welcome back, Naresh</div>
+            <div className="text-[10.5px] text-muted-foreground">Commodities Desk</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-4 overflow-y-auto px-3 pb-3">
+        {navGroups.map((group) => (
+          <div key={group.label}>
+            <p className="px-2.5 pb-1 text-[10px] font-semibold tracking-wide text-muted-foreground/70 uppercase">
+              {group.label}
+            </p>
+            <nav className="flex flex-col gap-0.5" aria-label={group.label}>
+              {group.items.map((item) => {
+                const isActive = active === item.label
+                return (
+                  <button
+                    key={item.label}
+                    onClick={() => onSelect(item.label)}
+                    className={cn(
+                      "relative flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-left text-[14.5px] font-medium transition-colors",
+                      isActive
+                        ? "bg-primary/8 text-primary"
+                        : "text-foreground/75 hover:bg-muted hover:text-foreground",
+                    )}
+                  >
+                    {isActive ? (
+                      <span className="absolute top-1/2 left-0 h-4 w-0.5 -translate-y-1/2 rounded-full bg-primary" />
+                    ) : null}
+                    <item.icon className="size-4 shrink-0" />
+                    <span className="truncate">{item.label}</span>
+                  </button>
+                )
+              })}
+            </nav>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-auto p-3">
+        <div className="rounded-lg border border-border bg-gradient-to-br from-card to-muted/30 p-3">
+          <p className="text-xs font-medium">Need access to a dataset?</p>
+          <p className="mt-0.5 text-[11px] leading-snug text-muted-foreground">
+            Request bindings through the governance queue.
+          </p>
+          <Button size="sm" variant="outline" className="mt-2 h-7 w-full text-xs">
+            Request access
+          </Button>
+        </div>
+      </div>
+    </>
+  )
+}
+
 export function ConsolePage({ onBack }: { onBack: () => void }) {
   const [active, setActive] = useState("Physical datasets")
+  const [mobileNavOpen, setMobileNavOpen] = useState(false)
+
+  const selectNav = (label: string) => {
+    setActive(label)
+    setMobileNavOpen(false)
+  }
 
   return (
     <div className="flex h-screen flex-col bg-background text-foreground">
       {/* ---------- Top bar ---------- */}
-      <header className="relative flex h-14 shrink-0 items-center justify-between border-b border-border bg-background px-4">
+      <header className="relative flex h-14 shrink-0 items-center justify-between gap-3 border-b border-border bg-background px-4">
         <div
           aria-hidden="true"
           className="absolute inset-x-0 bottom-0 h-px"
           style={{ background: `linear-gradient(90deg, ${stageColors.join(", ")})`, opacity: 0.5 }}
         />
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+          <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
+            <button
+              onClick={() => setMobileNavOpen(true)}
+              className="flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:hidden"
+              aria-label="Open menu"
+            >
+              <Menu className="size-5" />
+            </button>
+            <SheetContent side="left" className="flex w-64 flex-col p-0">
+              <SheetHeader className="border-b border-border">
+                <SheetTitle>Menu</SheetTitle>
+              </SheetHeader>
+              <SidebarNav active={active} onSelect={selectNav} />
+            </SheetContent>
+          </Sheet>
+
           <button
             onClick={onBack}
-            className="flex items-center gap-2 rounded-md py-1.5 pr-2 transition-opacity hover:opacity-80"
+            className="flex min-w-0 items-center gap-2 rounded-md py-1.5 pr-2 transition-opacity hover:opacity-80"
           >
-            <div className="flex size-6.5 items-center justify-center rounded-md bg-primary text-[12px] font-semibold text-primary-foreground">
+            <div className="flex size-6.5 shrink-0 items-center justify-center rounded-md bg-primary text-[12px] font-semibold text-primary-foreground">
               C
             </div>
-            <span className="text-sm font-semibold">CIB Data Marketplace</span>
+            <span className="truncate text-sm font-semibold">CIB Data Marketplace</span>
           </button>
-          <ChevronRight className="size-3.5 text-muted-foreground/50" />
-          <span className="text-sm text-muted-foreground">Physical datasets</span>
+          <ChevronRight className="hidden size-3.5 shrink-0 text-muted-foreground/50 sm:block" />
+          <span className="hidden truncate text-sm text-muted-foreground sm:block">Physical datasets</span>
         </div>
 
-        <div className="hidden items-center gap-1.5 rounded-md border border-border bg-muted/40 px-2.5 py-1.5 text-xs text-muted-foreground transition-colors focus-within:border-ring sm:flex sm:w-72">
+        <div className="hidden items-center gap-1.5 rounded-md border border-border bg-muted/40 px-2.5 py-1.5 text-xs text-muted-foreground transition-colors focus-within:border-ring md:flex md:w-72">
           <Search className="size-3.5" />
           Search datasets, terms, owners…
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex shrink-0 items-center gap-3">
           <button
             className="relative flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             aria-label="Notifications"
@@ -131,77 +226,14 @@ export function ConsolePage({ onBack }: { onBack: () => void }) {
       </header>
 
       <div className="flex min-h-0 flex-1">
-        {/* ---------- Sidebar ---------- */}
+        {/* ---------- Sidebar (desktop) ---------- */}
         <aside className="hidden w-60 shrink-0 flex-col border-r border-border bg-muted/15 sm:flex">
-          <div className="relative m-3 overflow-hidden rounded-lg border border-border bg-card p-3">
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute -top-6 -right-6 size-16 rounded-full opacity-20 blur-xl"
-              style={{ background: `linear-gradient(135deg, ${stageColors[0]}, ${stageColors[1]})` }}
-            />
-            <div className="relative flex items-center gap-2">
-              <div
-                className="flex size-8 items-center justify-center rounded-full text-[11px] font-semibold text-white"
-                style={{ background: `linear-gradient(135deg, ${stageColors[0]}, ${stageColors[1]})` }}
-              >
-                NN
-              </div>
-              <div className="min-w-0">
-                <div className="truncate text-xs font-semibold">Welcome back, Naresh</div>
-                <div className="text-[10.5px] text-muted-foreground">Commodities Desk</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-4 overflow-y-auto px-3 pb-3">
-            {navGroups.map((group) => (
-              <div key={group.label}>
-                <p className="px-2.5 pb-1 text-[10px] font-semibold tracking-wide text-muted-foreground/70 uppercase">
-                  {group.label}
-                </p>
-                <nav className="flex flex-col gap-0.5" aria-label={group.label}>
-                  {group.items.map((item) => {
-                    const isActive = active === item.label
-                    return (
-                      <button
-                        key={item.label}
-                        onClick={() => setActive(item.label)}
-                        className={cn(
-                          "relative flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-left text-[14.5px] font-medium transition-colors",
-                          isActive
-                            ? "bg-primary/8 text-primary"
-                            : "text-foreground/75 hover:bg-muted hover:text-foreground",
-                        )}
-                      >
-                        {isActive ? (
-                          <span className="absolute top-1/2 left-0 h-4 w-0.5 -translate-y-1/2 rounded-full bg-primary" />
-                        ) : null}
-                        <item.icon className="size-4 shrink-0" />
-                        <span className="truncate">{item.label}</span>
-                      </button>
-                    )
-                  })}
-                </nav>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-auto p-3">
-            <div className="rounded-lg border border-border bg-gradient-to-br from-card to-muted/30 p-3">
-              <p className="text-xs font-medium">Need access to a dataset?</p>
-              <p className="mt-0.5 text-[11px] leading-snug text-muted-foreground">
-                Request bindings through the governance queue.
-              </p>
-              <Button size="sm" variant="outline" className="mt-2 h-7 w-full text-xs">
-                Request access
-              </Button>
-            </div>
-          </div>
+          <SidebarNav active={active} onSelect={setActive} />
         </aside>
 
         {/* ---------- Main ---------- */}
         <main className="min-w-0 flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-[1200px] px-6 py-6">
+          <div className="mx-auto max-w-[1600px] px-4 py-5 sm:px-6 sm:py-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h1 className="text-xl font-semibold tracking-tight">Physical datasets</h1>
@@ -246,24 +278,26 @@ export function ConsolePage({ onBack }: { onBack: () => void }) {
                 <span className="text-xs text-muted-foreground">{datasets.length} datasets</span>
               </div>
 
-              <div className="grid grid-cols-[1fr_auto_auto_100px_auto] gap-3 border-b border-border bg-muted/30 px-4 py-2 text-[10.5px] font-medium tracking-wide text-muted-foreground uppercase">
-                <span>Dataset</span>
-                <span>SOR</span>
-                <span>Classification</span>
-                <span>Bound</span>
-                <span>Updated</span>
-              </div>
+              <div className="overflow-x-auto">
+                <div className="min-w-[640px]">
+                  <div className="grid grid-cols-[1fr_auto_auto_100px_auto] gap-3 border-b border-border bg-muted/30 px-4 py-2 text-[10.5px] font-medium tracking-wide text-muted-foreground uppercase">
+                    <span>Dataset</span>
+                    <span>SOR</span>
+                    <span>Classification</span>
+                    <span>Bound</span>
+                    <span>Updated</span>
+                  </div>
 
-              {datasets.map((d, i) => {
-                const color = stageColors[i % stageColors.length]
-                return (
-                  <div
-                    key={d.name}
-                    className={cn(
-                      "group grid grid-cols-[1fr_auto_auto_100px_auto] items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-muted/30",
-                      i < datasets.length - 1 && "border-b border-border",
-                    )}
-                  >
+                  {datasets.map((d, i) => {
+                    const color = stageColors[i % stageColors.length]
+                    return (
+                      <div
+                        key={d.name}
+                        className={cn(
+                          "group grid grid-cols-[1fr_auto_auto_100px_auto] items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-muted/30",
+                          i < datasets.length - 1 && "border-b border-border",
+                        )}
+                      >
                     <div className="flex min-w-0 items-center gap-2.5">
                       <div
                         className="flex size-7 shrink-0 items-center justify-center rounded-md"
@@ -297,13 +331,15 @@ export function ConsolePage({ onBack }: { onBack: () => void }) {
                       </div>
                       <span className="font-mono text-[10.5px] text-muted-foreground">{d.bound}%</span>
                     </div>
-                    <span className="flex items-center gap-2 text-xs text-muted-foreground">
-                      {d.updated}
-                      <ChevronRight className="size-3.5 opacity-0 transition-opacity group-hover:opacity-100" />
-                    </span>
-                  </div>
-                )
-              })}
+                        <span className="flex items-center gap-2 text-xs text-muted-foreground">
+                          {d.updated}
+                          <ChevronRight className="size-3.5 opacity-0 transition-opacity group-hover:opacity-100" />
+                        </span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
             </Card>
           </div>
         </main>
