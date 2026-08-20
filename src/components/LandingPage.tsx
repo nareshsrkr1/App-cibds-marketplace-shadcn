@@ -36,7 +36,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
-import { capabilities, faqs, metrics, pipeline } from "@/data/landing-content"
+import { capabilities, desks, faqs, metrics, pipeline } from "@/data/landing-content"
 
 const stageColors = [
   "var(--stage-produce)",
@@ -187,7 +187,7 @@ export function LandingPage({ onOpenWorkspace }: { onOpenWorkspace: () => void }
     <div className="min-h-screen bg-background text-foreground">
       {/* ---------- Nav ---------- */}
       <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-[1360px] items-center justify-between px-6">
+        <div className="mx-auto flex h-14 max-w-[1440px] items-center justify-between px-6">
           <div className="flex items-center gap-2.5">
             <div
               className="flex size-7 items-center justify-center rounded-md bg-primary text-[13px] font-semibold text-primary-foreground"
@@ -243,7 +243,7 @@ export function LandingPage({ onOpenWorkspace }: { onOpenWorkspace: () => void }
               "radial-gradient(60% 55% at 12% 0%, var(--stage-produce), transparent 70%), radial-gradient(50% 50% at 88% 8%, var(--stage-share), transparent 70%)",
           }}
         />
-        <div className="relative mx-auto max-w-[1360px] px-6 py-10 lg:py-12">
+        <div className="relative mx-auto max-w-[1440px] px-6 py-10 lg:py-12">
           <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
             <div>
               <h1 className="text-4xl leading-[1.08] font-semibold tracking-tight text-balance sm:text-[2.9rem]">
@@ -290,8 +290,25 @@ export function LandingPage({ onOpenWorkspace }: { onOpenWorkspace: () => void }
         </div>
       </section>
 
+      {/* ---------- Trust strip — used-by band, Purview-style logo bar (text, no real logos) ---------- */}
+      <div className="border-b border-border bg-card">
+        <div className="mx-auto flex max-w-[1440px] flex-col items-center gap-3 px-6 py-4 sm:flex-row sm:gap-6">
+          <span className="shrink-0 text-xs font-medium text-muted-foreground">Used across the firm</span>
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-1.5 sm:justify-start">
+            {desks.map((d) => (
+              <span
+                key={d}
+                className="text-[13px] font-medium text-muted-foreground/60 transition-colors hover:text-foreground"
+              >
+                {d}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* ---------- Capabilities — dense divided list, not padded cards ---------- */}
-      <section id="capabilities" className="mx-auto max-w-[1360px] px-6 pt-8 pb-12">
+      <section id="capabilities" className="mx-auto max-w-[1440px] px-6 pt-8 pb-12">
         <div className="mb-6">
           <Kicker color="var(--stage-produce)">Platform capabilities</Kicker>
           <h2 className="mt-1.5 text-2xl font-semibold tracking-tight sm:text-3xl">
@@ -331,6 +348,12 @@ export function LandingPage({ onOpenWorkspace }: { onOpenWorkspace: () => void }
                   </div>
                   <h3 className="mt-3 text-sm font-semibold">{c.title}</h3>
                   <p className="mt-1 text-[13px] leading-snug text-muted-foreground">{c.body}</p>
+                  <span
+                    className="mt-3 inline-flex items-center gap-1 text-xs font-medium"
+                    style={{ color: c.ai ? "var(--stage-share)" : color }}
+                  >
+                    Learn more <ArrowRight className="size-3" />
+                  </span>
                 </div>
               </Card>
             )
@@ -340,7 +363,7 @@ export function LandingPage({ onOpenWorkspace }: { onOpenWorkspace: () => void }
 
       {/* ---------- How it works — compact bordered stepper ---------- */}
       <section id="how-it-works" className="border-y border-border bg-muted/20">
-        <div className="mx-auto max-w-[1360px] px-6 py-12">
+        <div className="mx-auto max-w-[1440px] px-6 py-12">
           <div className="mb-8 max-w-xl">
             <Kicker color="var(--stage-govern)">How it works</Kicker>
             <h2 className="mt-1.5 text-2xl font-semibold tracking-tight sm:text-3xl">
@@ -379,7 +402,7 @@ export function LandingPage({ onOpenWorkspace }: { onOpenWorkspace: () => void }
       </section>
 
       {/* ---------- FAQ ---------- */}
-      <section id="faq" className="mx-auto max-w-[1360px] px-6 py-12">
+      <section id="faq" className="mx-auto max-w-[1440px] px-6 py-12">
         <div className="grid gap-8 lg:grid-cols-[300px_1fr]">
           <div>
             <Kicker color="var(--stage-consume)">Frequently asked</Kicker>
@@ -419,7 +442,7 @@ export function LandingPage({ onOpenWorkspace }: { onOpenWorkspace: () => void }
 
       {/* ---------- Footer ---------- */}
       <footer className="border-t border-border">
-        <div className="mx-auto flex max-w-[1360px] flex-col items-center justify-between gap-2 px-6 py-5 text-xs text-muted-foreground sm:flex-row">
+        <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-2 px-6 py-5 text-xs text-muted-foreground sm:flex-row">
           <div className="flex items-center gap-1.5">
             <span className="font-semibold text-foreground">Data Marketplace</span>
             <span>· CIB Data Services · Internal use only</span>

@@ -42,7 +42,7 @@
   /* Enterprise-grade neutral base: near-black ink on off-white, a single deep-navy
      primary — deliberately quiet (no purple/violet accent, no saturated brand color)
      so data-dense pages don't compete with the chrome around them. */
-  --background: oklch(0.99 0.002 260);
+  --background: oklch(0.965 0.004 260);
   --foreground: oklch(0.18 0.02 260);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.18 0.02 260);
