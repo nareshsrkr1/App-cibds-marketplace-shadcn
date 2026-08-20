@@ -4,7 +4,6 @@ import {
   Database,
   GitCommitHorizontal,
   Workflow,
-  BookOpenCheck,
   ShieldCheck,
   LayoutGrid,
   Search,
@@ -23,6 +22,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { cn } from "@/lib/utils"
 
 const stageColors = [
@@ -33,22 +33,34 @@ const stageColors = [
   "var(--stage-consume)",
 ] as const
 
-const navGroups = [
+// Standalone top-level items with no sub-menu.
+const navTop = [{ icon: LayoutGrid, label: "Console" }]
+
+// Sections: each is a tab-like heading with its own sub-menu underneath.
+const navSections = [
   {
-    label: "Workspace",
-    items: [
-      { icon: LayoutGrid, label: "Console" },
-      { icon: Database, label: "Physical datasets", active: true },
-      { icon: GitCommitHorizontal, label: "Bind columns" },
-      { icon: Workflow, label: "Workflow" },
-    ],
+    key: "catalog",
+    icon: Database,
+    label: "Catalog",
+    items: ["Physical datasets", "Logical datasets", "Business glossary", "Data elements"],
   },
   {
+    key: "curation",
+    icon: GitCommitHorizontal,
+    label: "Curation",
+    items: ["Bind columns", "Classification", "Lineage"],
+  },
+  {
+    key: "workflow",
+    icon: Workflow,
+    label: "Workflow",
+    items: ["My tasks", "Approvals"],
+  },
+  {
+    key: "governance",
+    icon: ShieldCheck,
     label: "Governance",
-    items: [
-      { icon: BookOpenCheck, label: "Glossary" },
-      { icon: ShieldCheck, label: "Governance" },
-    ],
+    items: ["Policies", "Access requests", "Audit log"],
   },
 ]
 
@@ -106,37 +118,76 @@ function SidebarNav({ active, onSelect }: { active: string; onSelect: (label: st
         </div>
       </div>
 
-      <div className="flex flex-col gap-4 overflow-y-auto px-3 pb-3">
-        {navGroups.map((group) => (
-          <div key={group.label}>
-            <p className="px-2.5 pb-1 text-[10px] font-semibold tracking-wide text-muted-foreground/70 uppercase">
-              {group.label}
-            </p>
-            <nav className="flex flex-col gap-0.5" aria-label={group.label}>
-              {group.items.map((item) => {
-                const isActive = active === item.label
-                return (
-                  <button
-                    key={item.label}
-                    onClick={() => onSelect(item.label)}
-                    className={cn(
-                      "relative flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-left text-[14.5px] font-medium transition-colors",
-                      isActive
-                        ? "bg-primary/8 text-primary"
-                        : "text-foreground/75 hover:bg-muted hover:text-foreground",
-                    )}
-                  >
-                    {isActive ? (
-                      <span className="absolute top-1/2 left-0 h-4 w-0.5 -translate-y-1/2 rounded-full bg-primary" />
-                    ) : null}
-                    <item.icon className="size-4 shrink-0" />
-                    <span className="truncate">{item.label}</span>
-                  </button>
-                )
-              })}
-            </nav>
-          </div>
-        ))}
+      <div className="flex flex-col gap-1 overflow-y-auto px-3 pb-3">
+        {/* Top-level items with no sub-menu */}
+        <nav className="mb-1 flex flex-col gap-0.5" aria-label="Top">
+          {navTop.map((item) => {
+            const isActive = active === item.label
+            return (
+              <button
+                key={item.label}
+                onClick={() => onSelect(item.label)}
+                className={cn(
+                  "relative flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-left text-[14.5px] font-semibold transition-colors",
+                  isActive
+                    ? "bg-primary/8 text-primary"
+                    : "text-foreground/85 hover:bg-muted hover:text-foreground",
+                )}
+              >
+                {isActive ? (
+                  <span className="absolute top-1/2 left-0 h-4 w-0.5 -translate-y-1/2 rounded-full bg-primary" />
+                ) : null}
+                <item.icon className="size-4 shrink-0" />
+                <span className="truncate">{item.label}</span>
+              </button>
+            )
+          })}
+        </nav>
+
+        {/* Sections: a bold tab-level heading, with a lighter, indented sub-menu underneath */}
+        <Accordion
+          type="multiple"
+          defaultValue={navSections.map((s) => s.key)}
+          className="flex flex-col gap-0.5"
+        >
+          {navSections.map((section) => (
+            <AccordionItem key={section.key} value={section.key} className="border-b-0">
+              <AccordionTrigger className="rounded-md px-2.5 py-1.5 text-[14.5px] font-semibold text-foreground/85 hover:bg-muted hover:text-foreground hover:no-underline [&_svg]:size-3.5">
+                <span className="flex items-center gap-2.5">
+                  <section.icon className="size-4 shrink-0" />
+                  {section.label}
+                </span>
+              </AccordionTrigger>
+              <AccordionContent className="pt-0.5 pb-1">
+                <nav
+                  className="ml-[1.05rem] flex flex-col gap-0.5 border-l border-border pl-3"
+                  aria-label={section.label}
+                >
+                  {section.items.map((label) => {
+                    const isActive = active === label
+                    return (
+                      <button
+                        key={label}
+                        onClick={() => onSelect(label)}
+                        className={cn(
+                          "relative rounded-md px-2 py-1.5 text-left text-[13px] font-normal transition-colors",
+                          isActive
+                            ? "bg-primary/8 font-medium text-primary"
+                            : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                        )}
+                      >
+                        {isActive ? (
+                          <span className="absolute top-1/2 -left-[13px] h-4 w-0.5 -translate-y-1/2 rounded-full bg-primary" />
+                        ) : null}
+                        <span className="truncate">{label}</span>
+                      </button>
+                    )
+                  })}
+                </nav>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
       </div>
 
       <div className="mt-auto p-3">
