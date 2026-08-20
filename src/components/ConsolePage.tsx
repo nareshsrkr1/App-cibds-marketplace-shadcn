@@ -233,7 +233,7 @@ export function ConsolePage({ onBack }: { onBack: () => void }) {
 
         {/* ---------- Main ---------- */}
         <main className="min-w-0 flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-[1600px] px-4 py-5 sm:px-6 sm:py-6">
+          <div className="w-full px-4 py-5 sm:px-6 sm:py-6 lg:px-8 xl:px-10">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h1 className="text-xl font-semibold tracking-tight">Physical datasets</h1>
